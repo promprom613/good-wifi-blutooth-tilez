@@ -77,7 +77,8 @@ class WifiTile : SettingsTile(
 ) {
     override fun isOn(): Boolean {
         val wm = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        return wm.isWifiEnabled
+        val s = wm.wifiState
+        return s == WifiManager.WIFI_STATE_ENABLED || s == WifiManager.WIFI_STATE_ENABLING
     }
 }
 
@@ -87,7 +88,8 @@ class BluetoothTile : SettingsTile(
 ) {
     override fun isOn(): Boolean = try {
         val bm = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        bm.adapter?.isEnabled == true
+        val s = bm.adapter?.state ?: BluetoothAdapter.STATE_OFF
+        s == BluetoothAdapter.STATE_ON || s == BluetoothAdapter.STATE_TURNING_ON
     } catch (e: SecurityException) {
         Settings.Global.getInt(contentResolver, "bluetooth_on", 0) == 1
     }
